@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>d635550c-5637-42a4-9514-9992617c562b</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>data_analyze.py</StartupFile>
+    <StartupFile>cache_hit.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -22,6 +22,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="cache_hit.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="data_analyze.py" />
     <Compile Include="gauss_fitting\density_provider.py" />
     <Compile Include="gauss_fitting\one_gauss_fitting.py" />

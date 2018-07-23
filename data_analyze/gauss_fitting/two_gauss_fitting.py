@@ -46,15 +46,17 @@ def _get_two_gauss_p0(density, last_two_gauss_p):
     p0 = [s_est[0], mu_est[0], s_est[1], mu_est[1], 0.5]
     return p0
 
-def _get_threshold(p_est):
-    return max(min(p_est[1]+2*p_est[0], p_est[3]+2*p_est[2]), min(p_est[1], p_est[3])+50)
+def _get_threshold(p_est, isHighFreq):
+    if isHighFreq:
+        return max(p_est[3]+2*p_est[2], min(p_est[1], p_est[3])+50)
+    return max(p_est[1]+2*p_est[0], min(p_est[1], p_est[3])+50)
 
-def fitting(density):
+def fitting(density, isHighFreq):
     p0 = _get_two_gauss_p0(density, [])
     p_est = leastsq(_err_two_gauss_func, p0, args=(density['x'], density['y']))
     density['param0'] = p0
     density['y0_est'] = _two_gauss_func(p0, density['x'])
     density['param'] = p_est[0]
     density['y_est'] = _two_gauss_func(p_est[0], density['x'])
-    density['threshold'] = _get_threshold(p_est[0])
+    density['threshold'] = _get_threshold(p_est[0], isHighFreq)
     return density
