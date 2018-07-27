@@ -11,7 +11,7 @@ def _err_two_gauss_func(par, t, expect_output):
     return err
 
 def _get_first_two_peak_index(density):
-    peak_indices = peakutils.indexes(density['y'], min_dist=3)
+    peak_indices = peakutils.indexes(density['y'], thres=0.2)
     peak_indices.sort()
     return peak_indices[:2]
 
@@ -19,7 +19,7 @@ def _get_sigma(density, two_peak_index):
     xs = density['x']
     ys = density['y']
     s_est = []
-    valley_indices = peakutils.indexes(-ys, min_dist=3)
+    valley_indices = peakutils.indexes(-ys, thres=0.1)
     if valley_indices.size == 0:
         valley_indices = np.append(valley_indices, int(np.average(two_peak_index)))
     valleies = xs[valley_indices]
@@ -51,12 +51,17 @@ def _get_threshold(p_est, isHighFreq):
         return max(p_est[3]+2*p_est[2], min(p_est[1], p_est[3])+50)
     return max(p_est[1]+2*p_est[0], min(p_est[1], p_est[3])+50)
 
+def _get_sorted_param(p_est):
+    if (p_est[1] < p_est[3]):
+        return p_est
+    return [p_est[2], p_est[3], p_est[0], p_est[1], 1-p_est[4]]
+
 def fitting(density, isHighFreq):
     p0 = _get_two_gauss_p0(density, [])
     p_est = leastsq(_err_two_gauss_func, p0, args=(density['x'], density['y']))
     density['param0'] = p0
     density['y0_est'] = _two_gauss_func(p0, density['x'])
-    density['param'] = p_est[0]
+    density['param'] = _get_sorted_param(p_est[0])
     density['y_est'] = _two_gauss_func(p_est[0], density['x'])
     density['threshold'] = _get_threshold(p_est[0], isHighFreq)
     return density

@@ -10,10 +10,10 @@ from gauss_fitting import two_gauss_fitting
 
 DATA_DIR = ".\\cache_hit\\"
 #DETECTED_CAT = ["duration_P75", "duration_P95", "duration_P75_fft", "duration_P95_fft"]
-DETECTED_CAT = ["ratio", "sampleNum", "ratio_butter", "sampleNum_butter"]
-CATEGORY = ["ratio", "sampleNum"]
+DETECTED_CAT = ["ratio", "MissCount", "HitCount", "ratio_butter", "MissCount_butter", "HitCount_butter"]
+CATEGORY = ["ratio", "MissCount", "HitCount"]
 CHART_COLUMNS = 2
-CHART_ROWS = 2
+CHART_ROWS = 3
 
 def _save_chart(density, origin, anomaly, file_name):
     fig = plt.figure(figsize=(20, 7*CHART_ROWS), dpi=80)
@@ -37,6 +37,8 @@ def _save_chart(density, origin, anomaly, file_name):
 def _check_anomaly(origin, density, file_name):
     anomaly = {}
     for category in CATEGORY:
+        if (category == 'ratio'):
+            density[category]['threshold'] = min(density[category]['threshold'], 999)
         anomaly[category] = origin[origin[category] > density[category]['threshold']]
     _save_chart(density, origin, anomaly, file_name)
     
@@ -50,13 +52,13 @@ def _start_detect(origin, file_name):
     for category in CATEGORY:
         butter_cat = category+"_butter"
         if not isinstance(densities[category], dict):
-            print('The perf data is stable at {}'.format(densities[category]))
+            print('The perf data is stable at {}: {}'.format(category, densities[category]))
             return
         if density_provider.is_one_more_peak(densities[category]):
             isHighFreq = True
             if (isinstance(densities[butter_cat], dict) and density_provider.is_one_more_peak(densities[butter_cat])):
                 isHighFreq = False
-            density = two_gauss_fitting.fitting(densities[category], isHighFreq)
+            density = two_gauss_fitting.fitting(densities[category], False)
         else:
             density = one_gauss_fitting.fitting(densities[category])
         
@@ -65,17 +67,18 @@ def _start_detect(origin, file_name):
 
 file_list = (os.listdir(DATA_DIR))
 
-for file in file_list:
+#for file in file_list:
+for file in ['Test_Cache.csv']:
     if os.path.isdir(DATA_DIR+file):
         continue    
     data = pd.read_csv(DATA_DIR+file) 
-    data = data.drop([119])
+    #data = data.drop([119])
     print(file)
     data['startDayHour'] = pd.to_datetime(data.DateKey, format="%Y%m%d").apply(lambda x: x.date())
     data['ratio'] = data.apply((lambda x: 1 if x.MissCount+x.HitCount == 0 else x.MissCount/(x.MissCount+x.HitCount)), axis=1)*1000
-    data['sampleNum'] = data.MissCount+data.HitCount
     b,a = signal.butter(3, 0.15, 'low')
     data['ratio_butter'] = signal.filtfilt(b, a, data['ratio'])
-    data['sampleNum_butter'] = signal.filtfilt(b, a, data['sampleNum'])
+    data['MissCount_butter'] = signal.filtfilt(b, a, data['MissCount'])
+    data['HitCount_butter'] = signal.filtfilt(b, a, data['HitCount'])
     _start_detect(data, str.replace(file, ".csv", ".png"))
     

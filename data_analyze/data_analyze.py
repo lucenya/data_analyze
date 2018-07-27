@@ -8,7 +8,7 @@ from gauss_fitting import density_provider
 from gauss_fitting import one_gauss_fitting
 from gauss_fitting import two_gauss_fitting
 
-DATA_DIR = ".\\data_7_18\\"
+DATA_DIR = ".\\data\\"
 #DETECTED_CAT = ["duration_P75", "duration_P95", "duration_P75_fft", "duration_P95_fft"]
 DETECTED_CAT = ["duration_P75", "duration_P95", "duration_P75_butter", "duration_P95_butter"]
 CATEGORY = ["duration_P75", "duration_P95"]
@@ -76,7 +76,6 @@ for file in file_list:
     if os.path.isdir(DATA_DIR+file):
         continue    
     data = pd.read_csv(DATA_DIR+file) 
-    data = data.drop([119])
     print(file)
     data['startDayHour'] = pd.to_datetime(data.startDayHour)
     b,a = signal.butter(3, 0.15, 'low')

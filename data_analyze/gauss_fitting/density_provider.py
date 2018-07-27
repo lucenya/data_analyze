@@ -19,4 +19,4 @@ def get_density(origin):
     return density
 
 def is_one_more_peak(density):
-    return len(peakutils.indexes(density['y'], min_dist=3)) > 1
+    return len(peakutils.indexes(density['y'], thres=0.2)) > 1

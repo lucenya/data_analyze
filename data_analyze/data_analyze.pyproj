@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>d635550c-5637-42a4-9514-9992617c562b</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>cache_hit.py</StartupFile>
+    <StartupFile>data_analyze.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>

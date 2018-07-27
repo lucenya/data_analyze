@@ -20,7 +20,7 @@ def _err_two_gauss_func(par, t, expect_output):
 def _get_p0(density):
     xs = density['x']
     ys = density['y']
-    indices = peakutils.indexes(-ys, min_dist=3)
+    indices = peakutils.indexes(-ys, thres=0.1)
     valleies = xs[indices]
     valleies = np.append(valleies, min(xs))
     valleies = np.append(valleies, max(xs))
